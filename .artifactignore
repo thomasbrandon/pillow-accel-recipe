@@ -1,0 +1,4 @@
+# Ignore all repository metadata files
+.cache/**
+index.html
+repodata*
