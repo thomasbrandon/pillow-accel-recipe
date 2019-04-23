@@ -16,8 +16,8 @@
 {% endif %}
 
 # TODO: What happens if we don't have subpackages but just have all packages depend on a
-#       differnet version of a metapackage. Installing another variant should then 
-#       uninstall the first to satisfy metapackage verion.
+#       different version of a metapackage. Installing another variant should then 
+#       uninstall the first to satisfy metapackage version.
 
 package:
   name: pillow-accel-{{ accel }}
@@ -35,16 +35,6 @@ requirements:
 build:
   number: {{ build_num }}
   string: py{{ CONDA_PY  }}_{{ accel }}_{{ build_num }}
-  # string: py{{ CONDA_PY  }}_{{ build_num }}
-  # script:
-  #   - echo $RPATH
-  #   - export CFLAGS="${CFLAGS/-march=* / }"
-  #   - export CFLAGS="${CFLAGS/-mtune=* / }"
-  #   - export CFLAGS="${CFLAGS} -march={{ march }} -mtune={{ mtune }}"
-  #   # --disable platform-guessing is a pillow-simd option that stops it guessing system
-  #   # include directories.
-  #   # --old-and-unmanageable stops setuptools creating an egg which causes a conda build warning
-  #   - python setup.py build_ext --disable-platform-guessing install --old-and-unmanageable
 
 test:
   imports:
@@ -89,6 +79,7 @@ outputs:
         - olefile 0.* # Was 0.44 but this doesn't work with py37, check this
       run:
         - python {{ python }}
+        - {{ default }} # Metapackage to specify default variant
         # Freetype doesn't specify it's own pinning so do that. Could possibly be upstreamed.
         - {{ pin_compatible('freetype', max_pin='x.x') }}
       run_constrained:
@@ -117,7 +108,3 @@ outputs:
         license_family: Other
         license_file: LICENSE
         summary: 'Accelerated version of the friendly PIL fork by Alex Clark and Contributors.'
-
-      #  extra:
-      #    - pillow-accel-variant: py{{ CONDA_PY }}_{{ accel }}
-    

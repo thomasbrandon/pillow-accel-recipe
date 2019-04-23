@@ -26,6 +26,3 @@ jobs:
         inputs:
           artifactName: 'linux64-packages'
           targetPath: '$(conda_build_prefix)/linux-64/*pillow-accel*.tar.bz2'
-
-
-      
