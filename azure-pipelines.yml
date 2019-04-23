@@ -17,13 +17,12 @@ jobs:
         displayName: Setup job
       - bash: |
           source activate buildEnv
-          conda build . --output-folder "$(Build.ArtifactStagingDirectory)"
+          conda build --output-folder "$(Build.ArtifactStagingDirectory)" .
         workingDirectory: $(Build.SourcesDirectory)/recipes/_pillow-accel-default/
         displayName: Build defaults metapackage
       - bash: |
           source activate buildEnv
-          conda build -c defaults -c conda-forge .
-          cp "$CONDA_PREFIX/conda-bld/**"" "$(Build.ArtifactStagingDirectory)"
+          conda build -c defaults -c conda-forge --output-folder "$(Build.ArtifactStagingDirectory)" .
         workingDirectory: $(Build.SourcesDirectory)/recipes/pillow-accel/
         displayName: Build packages
       - task: PublishPipelineArtifact@0
