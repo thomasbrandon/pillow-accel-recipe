@@ -25,7 +25,7 @@ jobs:
           conda build -c defaults -c conda-forge --output-folder "$(Build.ArtifactStagingDirectory)" .
         workingDirectory: $(Build.SourcesDirectory)/recipes/pillow-accel/
         displayName: Build packages
-      - task: PublishPipelineArtifact@0
+      - task: PublishBuildArtifacts@1
         inputs:
-          artifactName: 'linux64-packages'
-          targetPath: '$(Build.ArtifactStagingDirectory)/linux-64/*.tar.bz2'
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          artifactName: linux64-packages
