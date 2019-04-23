@@ -1,0 +1,31 @@
+# pillow-accel Azure Pipelines build
+
+name: $(Date:yyyyMMdd).$(Rev:.r)
+
+jobs:
+  - job: Linux
+    displayname: Linux build job. Builds all variants with conda build.
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+      - bash: echo "##vso[task.prependpath]$CONDA/bin"
+        displayName: Initialise task. Add conda to PATH.
+      - bash: |
+          conda create --yes --quiet --name buildEnv
+          conda activate buildEnv
+          conda install --yes --quiet --name buildEnv conda-build conda-verify
+          echo "##vso[task.setvariable variable=conda_build_prefix]$CONDA_PREFIX/conda-bld"
+        displayName: Create conda environment
+      - bash: conda build .
+        workingDirectory: $(Build.SourcesDirectory)/recipes/_pillow-accel-default/
+        displayName: Build defaults metapackage
+      - bash: conda build -c defaults -c conda-forge .
+        workingDirectory: $(Build.SourcesDirectory)/recipes/pillow-accel/
+        displayName: Build packages
+      - task: PublishPipelineArtifact@0
+        inputs:
+          artifactName: 'linux64-packages'
+          targetPath: '$(conda_build_prefix)/linux-64/*pillow-accel*.tar.bz2'
+
+
+      

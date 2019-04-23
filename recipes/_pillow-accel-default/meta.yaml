@@ -1,0 +1,12 @@
+# This packages controls the default selected package
+# TODO: Should be able to replace this with conda metapackage commands
+package:
+  name: _pillow-accel-default
+  version: {{ version }}
+
+build:
+  number: 0
+  string: {{ build_str }}
+
+about:
+  summary: "A dummy package to specify is a pillow-accel variant is the default or not"

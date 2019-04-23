@@ -1,0 +1,123 @@
+{% set version = "5.3.0.post1" %}
+{% set build_num = "0" %}
+
+
+# Acceleration options
+{% if accel == "avx512" %}
+  # Only AVX512 arch in gcc 7.3.0 used by conda
+  {% set march = "skylake-avx512" %}
+  {% set mtune = "skylake-avx512" %}
+{% elif accel == "avx2" %}
+  {% set march = "core-avx2" %}
+  {% set mtune = "skylake" %}
+{% elif accel == "sse4" %}
+  {% set march = "nehalem" %}
+  {% set mtune = "ivybridge" %}
+{% endif %}
+
+# TODO: What happens if we don't have subpackages but just have all packages depend on a
+#       differnet version of a metapackage. Installing another variant should then 
+#       uninstall the first to satisfy metapackage verion.
+
+package:
+  name: pillow-accel-{{ accel }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.python.org/packages/source/p/pillow-simd/Pillow-SIMD-{{ version }}.tar.gz
+
+requirements:
+  host:
+    - python {{ python }}
+  run:
+    - {{ pin_subpackage('pillow-accel', exact=True) }}
+
+build:
+  number: {{ build_num }}
+  string: py{{ CONDA_PY  }}_{{ accel }}_{{ build_num }}
+  # string: py{{ CONDA_PY  }}_{{ build_num }}
+  # script:
+  #   - echo $RPATH
+  #   - export CFLAGS="${CFLAGS/-march=* / }"
+  #   - export CFLAGS="${CFLAGS/-mtune=* / }"
+  #   - export CFLAGS="${CFLAGS} -march={{ march }} -mtune={{ mtune }}"
+  #   # --disable platform-guessing is a pillow-simd option that stops it guessing system
+  #   # include directories.
+  #   # --old-and-unmanageable stops setuptools creating an egg which causes a conda build warning
+  #   - python setup.py build_ext --disable-platform-guessing install --old-and-unmanageable
+
+test:
+  imports:
+    # Only wrapping subpackage which does fuller tests, so just a minimal check here
+    - PIL.Image
+
+about:
+  home: https://github.com/uploadcare/pillow-simd/
+  license: PIL license
+  license_family: Other
+  license_file: LICENSE
+  summary: 'Accelerated version of the friendly PIL fork by Alex Clark and Contributors. For {{ accel|upper }} capable processors.'
+
+extra:
+  pillow-accel-variant: py{{ python }}_{{ accel }}
+
+outputs:
+  - name: pillow-accel
+    build:
+      number: {{ build_num }}
+      string: py{{ CONDA_PY  }}_{{ accel }}_{{ build_num }}
+      script:
+        - export CFLAGS="${CFLAGS/-march=* / }"
+        - export CFLAGS="${CFLAGS/-mtune=* / }"
+        - export CFLAGS="${CFLAGS} -march={{ march }} -mtune={{ mtune }}"
+        # --disable platform-guessing is a pillow-simd option that stops it guessing system
+        # include directories.
+        # --old-and-unmanageable stops setuptools creating an egg which causes a conda build warning
+        - python setup.py build_ext --disable-platform-guessing install --old-and-unmanageable
+    requirements:
+      build:
+        - {{ compiler('c') }}
+      host:
+        - python {{ python }}
+        - setuptools
+        - pkg-config
+        - libjpeg-turbo 2.0.*
+        - zlib 1.2.*
+        - libtiff 4.0.*
+        - freetype 2.6.*
+        - tk 8.* # Was 8.5.* but this doesn't work on py37, check this
+        - olefile 0.* # Was 0.44 but this doesn't work with py37, check this
+      run:
+        - python {{ python }}
+        # Freetype doesn't specify it's own pinning so do that. Could possibly be upstreamed.
+        - {{ pin_compatible('freetype', max_pin='x.x') }}
+      run_constrained:
+          # libjpeg from version 8 will clobber libjpeg-turbo
+          # This will allow anything but 8 so other versions can be installed
+          # Should possibly be upstreamed to libjpeg-turbo
+          - jpeg !=8.*
+    test:
+      files:
+        - Tests/images
+      source_files:
+        - selftest.py
+      commands:
+        - python selftest.py
+      imports:
+        - PIL
+        - PIL.Image
+        - PIL._imaging
+        - PIL._imagingft
+        - PIL._imagingmath
+        - PIL._imagingmorph
+        - PIL._imagingtk     #[linux and not (arm or ppc64le)]
+      about:
+        home: https://github.com/uploadcare/pillow-simd/
+        license: PIL license
+        license_family: Other
+        license_file: LICENSE
+        summary: 'Accelerated version of the friendly PIL fork by Alex Clark and Contributors.'
+
+      #  extra:
+      #    - pillow-accel-variant: py{{ CONDA_PY }}_{{ accel }}
+    

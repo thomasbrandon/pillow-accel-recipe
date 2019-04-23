@@ -1,0 +1,18 @@
+python:
+  - 3.6
+  - 3.7
+# Specify optimisations and if they are default by requirement on metapackage.
+# Default optimisation will require version 1 of the metapackage so is chosen over the
+# others which require version 0.
+accel:
+  - sse4
+  - avx2
+#  - avx512
+default:
+  - "_pillow-accel-default=1=default"
+  - "_pillow-accel-default=0=not_default"
+#  - _pillow-accel-default=0=not_default
+
+zip_keys:
+  - accel
+  - default
