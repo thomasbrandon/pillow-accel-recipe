@@ -17,8 +17,7 @@ jobs:
         displayName: Setup job
       - bash: |
           source activate buildEnv
-          conda build .
-          cp -v "$CONDA_PREFIX/conda-bld/**" "$(Build.ArtifactStagingDirectory)/"
+          conda build . --output-folder "$(Build.ArtifactStagingDirectory)"
         workingDirectory: $(Build.SourcesDirectory)/recipes/_pillow-accel-default/
         displayName: Build defaults metapackage
       - bash: |
