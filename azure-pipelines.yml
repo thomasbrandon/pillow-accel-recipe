@@ -4,7 +4,7 @@ name: $(Date:yyyyMMdd).$(Rev:.r)
 
 jobs:
   - job: Linux
-    displayname: Linux build job. Builds all variants with conda build.
+    displayName: Linux build job. Builds all variants with conda build.
     pool:
       vmImage: 'Ubuntu 16.04'
     steps:
