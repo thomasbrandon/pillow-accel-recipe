@@ -13,20 +13,21 @@ jobs:
       - bash: |
           conda create --yes --quiet --name buildEnv conda-build conda-verify
           source activate buildEnv
-          # Store conda build path to variable to retrieve artifacts
-          echo "##vso[task.setvariable variable=conda_build_prefix]$CONDA_PREFIX/conda-bld"
-        displayName: Create conda environment
+          mkdir -p $(Build.ArtifactStagingDirectory)/linux-64/
+        displayName: Setup job
       - bash: |
           source activate buildEnv
           conda build .
+          cp "$CONDA_PREFIX/conda-bld/linux-64/_pillow-accel*.tar.bz2" "$(Build.ArtifactStagingDirectory)/linux-64/"
         workingDirectory: $(Build.SourcesDirectory)/recipes/_pillow-accel-default/
         displayName: Build defaults metapackage
       - bash: |
           source activate buildEnv
           conda build -c defaults -c conda-forge .
+          cp $CONDA_PREFIX/conda-bld/linux-64/pillow-accel*.tar.bz2 $(Build.ArtifactStagingDirectory)/linux-64/
         workingDirectory: $(Build.SourcesDirectory)/recipes/pillow-accel/
         displayName: Build packages
       - task: PublishPipelineArtifact@0
         inputs:
           artifactName: 'linux64-packages'
-          targetPath: '$(conda_build_prefix)/linux-64/*.tar.bz2'
+          targetPath: '$(Build.ArtifactStagingDirectory)/linux-64/*.tar.bz2'
