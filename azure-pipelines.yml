@@ -18,19 +18,15 @@ jobs:
         displayName: Create conda environment
       - bash: |
           source activate buildEnv
-          LOG=/tmp/pkg_build_log
-          conda build . 2>&1 | tee $LOG
-          [[ -f $LOG ]] &&  echo "##vso[task.uploadfile]$LOG" || echo "##vso[task.logissue]No log for meta package"
+          conda build .
         workingDirectory: $(Build.SourcesDirectory)/recipes/_pillow-accel-default/
         displayName: Build defaults metapackage
       - bash: |
           source activate buildEnv
-          LOG=/tmp/pkg_build_log
-          conda build -c defaults -c conda-forge . 2>&1 | tee $LOG
-          [[ -f $LOG ]] &&  echo "##vso[task.uploadfile]$LOG" || echo "##vso[task.logissue]No log for package"
+          conda build -c defaults -c conda-forge .
         workingDirectory: $(Build.SourcesDirectory)/recipes/pillow-accel/
         displayName: Build packages
       - task: PublishPipelineArtifact@0
         inputs:
           artifactName: 'linux64-packages'
-          targetPath: '$(conda_build_prefix)/linux-64/*pillow-accel*.tar.bz2'
+          targetPath: '$(conda_build_prefix)/linux-64/*.tar.bz2'
