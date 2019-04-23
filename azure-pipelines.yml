@@ -18,13 +18,13 @@ jobs:
       - bash: |
           source activate buildEnv
           conda build .
-          cp "$CONDA_PREFIX/conda-bld/linux-64/_pillow-accel*.tar.bz2" "$(Build.ArtifactStagingDirectory)/linux-64/"
+          cp -v "$CONDA_PREFIX/conda-bld/**" "$(Build.ArtifactStagingDirectory)/"
         workingDirectory: $(Build.SourcesDirectory)/recipes/_pillow-accel-default/
         displayName: Build defaults metapackage
       - bash: |
           source activate buildEnv
           conda build -c defaults -c conda-forge .
-          cp $CONDA_PREFIX/conda-bld/linux-64/pillow-accel*.tar.bz2 $(Build.ArtifactStagingDirectory)/linux-64/
+          cp "$CONDA_PREFIX/conda-bld/**"" "$(Build.ArtifactStagingDirectory)"
         workingDirectory: $(Build.SourcesDirectory)/recipes/pillow-accel/
         displayName: Build packages
       - task: PublishPipelineArtifact@0
