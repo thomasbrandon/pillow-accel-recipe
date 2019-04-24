@@ -29,7 +29,7 @@ jobs:
       - task: PublishTestResults@2
         condition: succeededOrFailed()
         inputs:
-          testResultsFiles: '${conda_build_prefix}/**/test-results/test-*.xml'
+          testResultsFiles: '$(conda_build_prefix)/**/test-results/test-*.xml'
           testRunTitle: 'Selftest results for Linux-64'
       - task: DeleteFiles@1
         inputs:
