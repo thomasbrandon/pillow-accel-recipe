@@ -96,7 +96,7 @@ outputs:
       source_files:
         - selftest.py
       commands:
-        - python test_runner.py --no-status -o "${CONDA_PREFIX}/conda-bld/test-results/test-py{{ CONDA_PY  }}_{{ accel }}-selftest.xml" selftest
+        - python test_runner.py --no-status -o "${TEST_RESULTS_DIR-$CONDA_PREFIX/conda-bld/test-results}/test-py{{ CONDA_PY  }}_{{ accel }}-selftest.xml" selftest
       imports:
         - PIL
         - PIL.Image

@@ -23,6 +23,7 @@ jobs:
         displayName: Build defaults metapackage
       - bash: |
           source activate buildEnv
+          TEST_RESULTS_DIR=$(Common.TestResultsDirectory)
           conda build -c defaults -c conda-forge --output-folder "$(Build.ArtifactStagingDirectory)" .
         workingDirectory: $(Build.SourcesDirectory)/recipes/pillow-accel/
         displayName: Build packages
@@ -31,7 +32,7 @@ jobs:
         inputs:
           testResultsFiles: '**/test-*.xml'
           testRunTitle: 'Selftest results for Linux-64'
-          searchFolder: '$(conda_build_prefix)'
+          searchFolder: '$(Common.TestResultsDirectory)'
       - task: DeleteFiles@1
         inputs:
           sourceFolder: "$(Build.ArtifactStagingDirectory)/linux-64"
