@@ -23,7 +23,7 @@ jobs:
         displayName: Build defaults metapackage
       - bash: |
           source activate buildEnv
-          TEST_RESULTS_DIR=$(Common.TestResultsDirectory)
+          export TEST_RESULTS_DIR=$(Common.TestResultsDirectory)
           conda build -c defaults -c conda-forge --output-folder "$(Build.ArtifactStagingDirectory)" .
         workingDirectory: $(Build.SourcesDirectory)/recipes/pillow-accel/
         displayName: Build packages
