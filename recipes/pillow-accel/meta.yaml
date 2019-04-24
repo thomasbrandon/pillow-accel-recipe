@@ -88,12 +88,15 @@ outputs:
           # Should possibly be upstreamed to libjpeg-turbo
           - jpeg !=8.*
     test:
+      requires:
+        - junit-xml
       files:
         - Tests/images
+        - test_runner.py
       source_files:
         - selftest.py
       commands:
-        - python selftest.py
+        - python test_runner.py --no-status -o "${CONDA_PREFIX}/conda-bld/test-results/test-py{{ CONDA_PY  }}_{{ accel }}-selftest.xml" selftest
       imports:
         - PIL
         - PIL.Image
