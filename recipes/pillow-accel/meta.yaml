@@ -56,6 +56,8 @@ outputs:
     build:
       number: {{ build_num }}
       string: py{{ CONDA_PY  }}_{{ accel }}_{{ build_num }}
+      script_env:
+        - TEST_RESULTS_DIR
       script:
         - export CFLAGS="${CFLAGS/-march=* / }"
         - export CFLAGS="${CFLAGS/-mtune=* / }"
