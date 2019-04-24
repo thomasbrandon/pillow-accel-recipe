@@ -29,8 +29,9 @@ jobs:
       - task: PublishTestResults@2
         condition: succeededOrFailed()
         inputs:
-          testResultsFiles: '$(conda_build_prefix)/**/test-results/test-*.xml'
+          testResultsFiles: '**/test-results/test-*.xml'
           testRunTitle: 'Selftest results for Linux-64'
+          searchFolder: '$(conda_build_prefix)'
       - task: DeleteFiles@1
         inputs:
           sourceFolder: "$(Build.ArtifactStagingDirectory)/linux-64"
