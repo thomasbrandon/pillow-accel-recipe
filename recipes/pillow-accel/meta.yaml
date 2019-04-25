@@ -59,13 +59,7 @@ outputs:
       script_env:
         - TEST_RESULTS_DIR
       script:
-        - export CFLAGS="${CFLAGS/-march=* / }"
-        - export CFLAGS="${CFLAGS/-mtune=* / }"
-        - export CFLAGS="${CFLAGS} -march={{ march }} -mtune={{ mtune }}"
-        # --disable platform-guessing is a pillow-simd option that stops it guessing system
-        # include directories.
-        # --old-and-unmanageable stops setuptools creating an egg which causes a conda build warning
-        - python setup.py build_ext --disable-platform-guessing install --old-and-unmanageable
+        - ${RECIPE_DIR}/build-linux.sh {{ accel }} # [linux64]
     requirements:
       build:
         - {{ compiler('c') }}
