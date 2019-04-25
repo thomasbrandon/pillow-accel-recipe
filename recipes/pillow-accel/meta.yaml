@@ -59,7 +59,7 @@ outputs:
       script_env:
         - TEST_RESULTS_DIR
       script:
-        - ${RECIPE_DIR}/build-linux.sh {{ accel }} # [linux64]
+        - {{ RECIPE_DIR }}/build-linux.sh {{ accel }} # [linux64]
     requirements:
       build:
         - {{ compiler('c') }}
