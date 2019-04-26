@@ -21,7 +21,7 @@
 
 package:
   name: pillow-accel-{{ accel }}
-  version: {{ version }}
+  version: 0.{{ version }}
 
 source:
   url: https://pypi.python.org/packages/source/p/pillow-simd/Pillow-SIMD-{{ version }}.tar.gz
