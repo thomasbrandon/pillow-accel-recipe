@@ -1,20 +1,6 @@
 {% set version = "5.3.0.post1" %}
 {% set build_num = "0" %}
 
-
-# Acceleration options
-{% if accel == "avx512" %}
-  # Only AVX512 arch in gcc 7.3.0 used by conda
-  {% set march = "skylake-avx512" %}
-  {% set mtune = "skylake-avx512" %}
-{% elif accel == "avx2" %}
-  {% set march = "core-avx2" %}
-  {% set mtune = "skylake" %}
-{% elif accel == "sse4" %}
-  {% set march = "nehalem" %}
-  {% set mtune = "ivybridge" %}
-{% endif %}
-
 # TODO: What happens if we don't have subpackages but just have all packages depend on a
 #       different version of a metapackage. Installing another variant should then 
 #       uninstall the first to satisfy metapackage version.
@@ -67,17 +53,15 @@ outputs:
         - python {{ python }}
         - setuptools
         - pkg-config
-        - libjpeg-turbo 2.0.*
-        - zlib 1.2.*
-        - libtiff 4.0.*
-        - freetype 2.6.*
-        - tk 8.* # Was 8.5.* but this doesn't work on py37, check this
-        - olefile 0.* # Was 0.44 but this doesn't work with py37, check this
+        - libjpeg-turbo
+        - zlib
+        - libtiff
+        - freetype
+        - tk
+        - olefile
       run:
         - python {{ python }}
         - {{ default }} # Metapackage to specify default variant
-        # Freetype doesn't specify it's own pinning so do that. Could possibly be upstreamed.
-        - {{ pin_compatible('freetype', max_pin='x.x') }}
       run_constrained:
           # libjpeg from version 8 will clobber libjpeg-turbo
           # This will allow anything but 8 so other versions can be installed
