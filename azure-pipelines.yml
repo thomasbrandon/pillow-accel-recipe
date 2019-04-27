@@ -23,6 +23,11 @@ jobs:
         displayName: Build defaults metapackage
       - bash: |
           source activate buildEnv
+          conda build --output-folder "$(Build.ArtifactStagingDirectory)" .
+        workingDirectory: $(Build.SourcesDirectory)/recipes/pillow/
+        displayName: Build pillow metapackage
+      - bash: |
+          source activate buildEnv
           export TEST_RESULTS_DIR=$(Common.TestResultsDirectory)
           conda build -c defaults -c conda-forge --output-folder "$(Build.ArtifactStagingDirectory)" .
         workingDirectory: $(Build.SourcesDirectory)/recipes/pillow-accel/
@@ -40,6 +45,7 @@ jobs:
             .cache
             index.html
             repodata*
+          displayName: Remove uneeded files from staging
       - task: PublishPipelineArtifact@0
         inputs:
           targetPath: "$(Build.ArtifactStagingDirectory)/linux-64"

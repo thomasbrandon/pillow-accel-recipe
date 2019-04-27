@@ -1,5 +1,8 @@
-{% set version = "5.3.0.post1" %}
+{% set version = "5.3.0" %}
+{% set release = "post1" %}
 {% set build_num = "0" %}
+{% set url = "https://files.pythonhosted.org/packages/c1/14/7503657df68b428cb38e1f2cb5f8f086b53e9b6f4b79546596d1fcc30256/Pillow-SIMD-5.3.0.post1.tar.gz" %}
+{% set sha256 = "903dd895c9c5b88afa567fe582b5eaf55316b52869ba6aedc5325fbe0c9f05a1" %}
 
 # TODO: What happens if we don't have subpackages but just have all packages depend on a
 #       different version of a metapackage. Installing another variant should then 
@@ -7,10 +10,11 @@
 
 package:
   name: pillow-accel-{{ accel }}
-  version: {{ version }}
+  version: {{ version }}.{{ release }}
 
 source:
-  url: https://pypi.python.org/packages/source/p/pillow-simd/Pillow-SIMD-{{ version }}.tar.gz
+  url: {{ url }} # https://pypi.python.org/packages/source/p/pillow-simd/Pillow-SIMD-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
   host:
@@ -32,12 +36,31 @@ about:
   license: PIL license
   license_family: Other
   license_file: LICENSE
-  summary: 'Accelerated version of the friendly PIL fork by Alex Clark and Contributors. For {{ accel|upper }} capable processors.'
+  summary: 'Accelerated version of the friendly PIL fork by Alex Clark and Contributors. For {{ accel|upper }} capable x86-64 processors.'
 
 extra:
   pillow-accel-variant: py{{ python }}_{{ accel }}
 
 outputs:
+{% if accel == 'sse3' %}
+  # Default just depends on base pillow package. No version pinned
+  # so no need to update when pillow is ahead of pillow-simd.
+  - name: pillow-accel
+    build:
+      number: {{ build_num }}
+      string: {{ accel }}_{{ build_num }}
+    requirements:
+      run:
+        # Metapackage version 1 to favour this if just installing pillow-accel
+        - _pillow-accel-default=1=default
+        # We tag our pillow metapackages as alpha releases so this will ensure we
+        # don't use one of them here
+        - pillow>{{ version }}a
+    about:
+      summary: 'Do not install directly. Metapackage for pillow-accel to satisfy dependencies on pillow.'
+
+{% else %}
+  # Build pillow-simd variant
   - name: pillow-accel
     build:
       number: {{ build_num }}
@@ -61,12 +84,15 @@ outputs:
         - olefile
       run:
         - python {{ python }}
-        - {{ default }} # Metapackage to specify default variant
+        # Version 0 of metapackage to favour default of base pillow.
+        - _pillow-accel-default=0=not_default
+        # Metapackage to satisfy pillow dependencies
+        - pillow={{ version }}a=pillow_accel_{{ accel }}
       run_constrained:
-          # libjpeg from version 8 will clobber libjpeg-turbo
-          # This will allow anything but 8 so other versions can be installed
-          # Should possibly be upstreamed to libjpeg-turbo
-          - jpeg !=8.*
+        # libjpeg from version 8 will clobber libjpeg-turbo
+        # This will allow anything but 8 so other versions can be installed
+        # Should possibly be upstreamed to libjpeg-turbo
+        - jpeg !=8.*
     test:
       requires:
         - junit-xml
@@ -84,10 +110,11 @@ outputs:
         - PIL._imagingft
         - PIL._imagingmath
         - PIL._imagingmorph
-        - PIL._imagingtk     #[linux and not (arm or ppc64le)]
-      about:
-        home: https://github.com/uploadcare/pillow-simd/
-        license: PIL license
-        license_family: Other
-        license_file: LICENSE
-        summary: 'Accelerated version of the friendly PIL fork by Alex Clark and Contributors.'
+        - PIL._imagingtk     #[linux]
+    about:
+      home: https://github.com/uploadcare/pillow-simd/
+      license: PIL license
+      license_family: Other
+      license_file: LICENSE
+      summary: 'Accelerated version of the friendly PIL fork by Alex Clark and Contributors. Based on the pillow-simd fork.'
+{% endif %} # End of pillow-simd build

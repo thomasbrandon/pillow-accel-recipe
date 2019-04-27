@@ -1,8 +1,4 @@
-python:
-  - 3.6
-  - 3.7
 accel:
-  - sse3
   - sse4
   - avx2
 #  - avx512
