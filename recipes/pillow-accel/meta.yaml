@@ -55,7 +55,7 @@ outputs:
         - _pillow-accel-default=1=default
         # We tag our pillow metapackages as alpha releases so this will ensure we
         # don't use one of them here
-        - pillow>{{ version }}a
+        - pillow
     about:
       summary: 'Do not install directly. Metapackage for pillow-accel to satisfy dependencies on pillow.'
 
@@ -69,6 +69,10 @@ outputs:
         - TEST_RESULTS_DIR
       script:
         - {{ RECIPE_DIR }}/build-linux.sh {{ accel }} # [linux64]
+      # This feature is used by our pillow metapackage. This ensures it is not
+      # installed without an accelerated pillow-accel package.
+      track_features:
+        - pillow_accel
     requirements:
       build:
         - {{ compiler('c') }}

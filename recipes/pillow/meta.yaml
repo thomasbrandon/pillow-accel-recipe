@@ -1,9 +1,18 @@
 {% set version = "5.3.0" %}
 
+# This metapackage satisfies a pillow dependency in other packages.
+# It does not provide any files, these are in the accelerated variants.
+# A feature is used to ensure it is only installed with a variant.
+
+# TODO: Given the feature we probably don't need a special version so can be combined into main recipe.
+
 package:
   name: pillow
   # Alpha version to favour regular pillow
   version: {{ version }}a
 build:
   string: pillow_accel_{{ accel }}
-
+  # We require this feature which is provided by accelerated variants to
+  # ensure this metapackage is not installed without an accelerated variant.
+  features:
+    - pillow_accel
